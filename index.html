@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control de notas estudiantiles</title>
+  <meta name="description" content="Registra, edita y elimina las notas de estudiantes por materia y curso, y consulta todas las notas de cada estudiante.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#contenido">Ir al contenido</a>
+
+  <header class="top">
+    <h1>Control de notas</h1>
+    <p id="count" aria-live="polite"></p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" id="tab-registro" aria-controls="panel-registro" aria-selected="true">Registro de notas</button>
+    <button role="tab" id="tab-estudiante" aria-controls="panel-estudiante" aria-selected="false" tabindex="-1">Notas por estudiante</button>
+  </div>
+
+  <main id="contenido">
+    <!-- ===== Registro ===== -->
+    <section id="panel-registro" role="tabpanel" aria-labelledby="tab-registro" class="layout">
+      <div class="panel">
+        <h2 id="form-title">Nueva nota</h2>
+        <form id="note-form" novalidate>
+          <input type="hidden" id="note-id">
+          <div class="field">
+            <label for="estudiante">Estudiante</label>
+            <input id="estudiante" type="text" list="lista-estudiantes" maxlength="80" autocomplete="off" aria-describedby="estudiante-err">
+            <datalist id="lista-estudiantes"></datalist>
+            <p class="err" id="estudiante-err" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="materia">Materia</label>
+            <input id="materia" type="text" list="lista-materias" maxlength="60" autocomplete="off" aria-describedby="materia-err">
+            <datalist id="lista-materias"></datalist>
+            <p class="err" id="materia-err" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="curso">Curso</label>
+            <input id="curso" type="text" list="lista-cursos" maxlength="40" autocomplete="off" aria-describedby="curso-hint curso-err">
+            <datalist id="lista-cursos"></datalist>
+            <p class="hint" id="curso-hint">Por ejemplo: 10-A o Grupo 2.</p>
+            <p class="err" id="curso-err" role="alert"></p>
+          </div>
+          <div class="field">
+            <label for="nota">Nota</label>
+            <input id="nota" type="text" inputmode="decimal" maxlength="4" autocomplete="off" aria-describedby="nota-hint nota-err">
+            <p class="hint" id="nota-hint">Número entre 0,0 y 5,0. Se aprueba con 3,0 o más.</p>
+            <p class="err" id="nota-err" role="alert"></p>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn primary" id="save">Guardar nota</button>
+            <button type="button" class="btn" id="cancel" hidden>Cancelar edición</button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div class="listbar">
+          <h2>Todas las notas</h2>
+          <label class="sr" for="search">Buscar notas</label>
+          <input id="search" type="search" placeholder="Buscar por estudiante, materia o curso">
+        </div>
+        <div class="scroll" tabindex="0" role="region" aria-label="Tabla de notas">
+          <table id="tabla">
+            <thead><tr><th>Estudiante</th><th>Materia</th><th>Curso</th><th class="num">Nota</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="empty" class="empty" hidden></div>
+      </div>
+    </section>
+
+    <!-- ===== Por estudiante ===== -->
+    <section id="panel-estudiante" role="tabpanel" aria-labelledby="tab-estudiante" class="single" hidden>
+      <div class="listbar">
+        <h2>Notas por estudiante</h2>
+        <div>
+          <label for="sel-estudiante">Estudiante</label>
+          <select id="sel-estudiante"></select>
+        </div>
+      </div>
+      <div id="resumen" hidden>
+        <h3 id="nombre-est"></h3>
+        <dl class="stats">
+          <div><dt>Promedio</dt><dd id="st-prom"></dd></div>
+          <div><dt>Notas registradas</dt><dd id="st-total"></dd></div>
+          <div><dt>Aprobadas</dt><dd id="st-apr"></dd></div>
+          <div><dt>Reprobadas</dt><dd id="st-rep"></dd></div>
+        </dl>
+        <div class="scroll" tabindex="0" role="region" aria-label="Notas del estudiante">
+          <table id="tabla-est">
+            <thead><tr><th>Materia</th><th>Curso</th><th class="num">Nota</th><th>Estado</th><th>Actualizada</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="empty-est" class="empty" hidden></div>
+    </section>
+  </main>
+
+  <dialog id="confirm" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <h2 id="confirm-title">¿Eliminar esta nota?</h2>
+      <p id="confirm-text"></p>
+      <div class="actions">
+        <button value="cancel" class="btn" autofocus>Cancelar</button>
+        <button value="ok" class="btn danger">Eliminar nota</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
