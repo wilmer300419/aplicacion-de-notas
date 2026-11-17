@@ -1,0 +1,76 @@
+<%- include('../partials/head') %>
+<nav class="crumbs" aria-label="Ruta de navegación">
+  <a href="/teacher">Mis cursos</a> <span aria-hidden="true">/</span> <span aria-current="page"><%= course.name %></span>
+</nav>
+<h1><%= course.name %></h1>
+<p class="muted"><%= course.code %> · <%= students.length %> <%= students.length === 1 ? 'estudiante' : 'estudiantes' %>. Notas de 0 a <%= MAX_SCORE %>; los porcentajes de cada estudiante suman hasta 100 %.</p>
+
+<% if (!students.length) { %>
+  <div class="card empty"><p>Este curso todavía no tiene estudiantes inscritos.</p></div>
+<% } %>
+
+<% students.forEach(function (s) { const st = statusOf(s.average); %>
+  <section class="card" aria-labelledby="est-<%= s.enrollmentId %>">
+    <header class="card-head">
+      <div>
+        <h2 id="est-<%= s.enrollmentId %>"><%= s.name %></h2>
+        <p class="muted"><%= s.email %></p>
+      </div>
+      <div class="score-block">
+        <span class="big-score"><%= formatScore(s.average) %></span>
+        <span class="badge badge-<%= st.css %>"><%= st.label %></span>
+      </div>
+    </header>
+
+    <% if (!s.grades.length) { %><p class="empty">Sin notas todavía. Agrega la primera.</p><% } %>
+
+    <% s.grades.forEach(function (g) { const base = '/teacher/courses/' + course.id + '/grades/' + g.id; %>
+      <form class="grade-row" method="post" action="<%= base %>/update">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="field grow">
+          <label for="t-<%= g.id %>">Evaluación</label>
+          <input id="t-<%= g.id %>" name="title" value="<%= g.title %>" maxlength="80" required>
+        </div>
+        <div class="field">
+          <label for="n-<%= g.id %>">Nota</label>
+          <input id="n-<%= g.id %>" name="score" type="number" inputmode="decimal" min="0" max="<%= MAX_SCORE %>" step="0.1" value="<%= g.score %>" required>
+        </div>
+        <div class="field">
+          <label for="w-<%= g.id %>">Porcentaje</label>
+          <input id="w-<%= g.id %>" name="weight" type="number" inputmode="decimal" min="1" max="100" step="1" value="<%= g.weight %>" required>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Guardar</button>
+          <button class="btn btn-danger" type="submit" formaction="<%= base %>/delete" formnovalidate
+                  data-confirm="¿Eliminar la nota «<%= g.title %>» de <%= s.name %>?">Eliminar</button>
+        </div>
+      </form>
+    <% }) %>
+
+    <% if (s.weightUsed < 100) { %>
+      <details class="add-grade">
+        <summary class="btn btn-secondary">Agregar nota</summary>
+        <form class="grade-row" method="post" action="/teacher/courses/<%= course.id %>/grades">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="enrollmentId" value="<%= s.enrollmentId %>">
+          <div class="field grow">
+            <label for="nt-<%= s.enrollmentId %>">Evaluación</label>
+            <input id="nt-<%= s.enrollmentId %>" name="title" maxlength="80" placeholder="Ej. Parcial 2" required>
+          </div>
+          <div class="field">
+            <label for="nn-<%= s.enrollmentId %>">Nota</label>
+            <input id="nn-<%= s.enrollmentId %>" name="score" type="number" inputmode="decimal" min="0" max="<%= MAX_SCORE %>" step="0.1" required>
+          </div>
+          <div class="field">
+            <label for="nw-<%= s.enrollmentId %>">Porcentaje (máx. <%= 100 - s.weightUsed %> %)</label>
+            <input id="nw-<%= s.enrollmentId %>" name="weight" type="number" inputmode="decimal" min="1" max="<%= 100 - s.weightUsed %>" step="1" required>
+          </div>
+          <div class="actions"><button class="btn btn-primary" type="submit">Guardar nota</button></div>
+        </form>
+      </details>
+    <% } else { %>
+      <p class="muted small">Este estudiante ya tiene el 100 % del curso calificado.</p>
+    <% } %>
+  </section>
+<% }) %>
+<%- include('../partials/foot') %>

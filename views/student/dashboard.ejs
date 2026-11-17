@@ -1,0 +1,55 @@
+<%- include('../partials/head') %>
+<h1>Mis notas</h1>
+<% if (!courses.length) { %>
+  <div class="card empty">
+    <p>Todavía no estás inscrito en ningún curso. Cuando un profesor te agregue, tus notas aparecerán aquí.</p>
+  </div>
+<% } else { %>
+  <section class="card summary" aria-labelledby="overall-title">
+    <div>
+      <h2 id="overall-title">Promedio general</h2>
+      <p class="muted">Promedio de tus cursos con notas publicadas.</p>
+    </div>
+    <div class="score-block">
+      <span class="big-score"><%= formatScore(overall) %></span>
+      <% if (overall !== null) { %>
+        <meter min="0" max="<%= MAX_SCORE %>" low="<%= PASS_SCORE - 0.01 %>" high="<%= PASS_SCORE %>" optimum="<%= MAX_SCORE %>" value="<%= overall %>" aria-label="Promedio general sobre <%= MAX_SCORE %>"><%= formatScore(overall) %></meter>
+      <% } %>
+    </div>
+  </section>
+
+  <% courses.forEach(function (c) { const st = statusOf(c.average); %>
+    <section class="card" aria-labelledby="curso-<%= c.course_id %>">
+      <header class="card-head">
+        <div>
+          <h2 id="curso-<%= c.course_id %>"><%= c.name %></h2>
+          <p class="muted"><%= c.code %> · Profesor(a) <%= c.teacher_name %></p>
+        </div>
+        <div class="score-block">
+          <span class="big-score"><%= formatScore(c.average) %></span>
+          <span class="badge badge-<%= st.css %>"><%= st.label %></span>
+          <% if (c.average !== null) { %>
+            <meter min="0" max="<%= MAX_SCORE %>" low="<%= PASS_SCORE - 0.01 %>" high="<%= PASS_SCORE %>" optimum="<%= MAX_SCORE %>" value="<%= c.average %>" aria-label="Promedio de <%= c.name %> sobre <%= MAX_SCORE %>"><%= formatScore(c.average) %></meter>
+          <% } %>
+        </div>
+      </header>
+      <% if (c.grades.length) { %>
+        <div class="table-wrap">
+          <table>
+            <caption class="sr-only">Notas de <%= c.name %></caption>
+            <thead><tr><th scope="col">Evaluación</th><th scope="col" class="num">Nota</th><th scope="col" class="num">Porcentaje</th></tr></thead>
+            <tbody>
+              <% c.grades.forEach(function (g) { %>
+                <tr><th scope="row"><%= g.title %></th><td class="num"><%= g.score.toFixed(1) %></td><td class="num"><%= g.weight %> %</td></tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted small">Evaluado hasta ahora: <%= c.weightUsed %> % del curso. El promedio se calcula sobre ese porcentaje.</p>
+      <% } else { %>
+        <p class="empty">Tu profesor aún no ha publicado notas en este curso.</p>
+      <% } %>
+    </section>
+  <% }) %>
+<% } %>
+<%- include('../partials/foot') %>

@@ -1,0 +1,17 @@
+<%- include('../partials/head') %>
+<h1>Mis cursos</h1>
+<% if (!courses.length) { %>
+  <div class="card empty"><p>Aún no tienes cursos asignados. Pide al administrador que te asigne uno.</p></div>
+<% } else { %>
+  <ul class="course-grid">
+    <% courses.forEach(function (c) { %>
+      <li class="card">
+        <h2><a href="/teacher/courses/<%= c.id %>"><%= c.name %></a></h2>
+        <p class="muted"><%= c.code %></p>
+        <p><%= c.student_count %> <%= c.student_count === 1 ? 'estudiante inscrito' : 'estudiantes inscritos' %></p>
+        <a class="btn btn-secondary" href="/teacher/courses/<%= c.id %>">Calificar <span class="sr-only"><%= c.name %></span></a>
+      </li>
+    <% }) %>
+  </ul>
+<% } %>
+<%- include('../partials/foot') %>

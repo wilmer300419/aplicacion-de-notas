@@ -1,0 +1,7 @@
+<%- include('partials/head') %>
+<section class="auth card">
+  <h1><%= status === 404 ? 'Página no encontrada' : status === 403 ? 'Acceso restringido' : 'Algo salió mal' %></h1>
+  <p><%= message %></p>
+  <p><a class="btn btn-primary" href="/">Volver al inicio</a></p>
+</section>
+<%- include('partials/foot') %>

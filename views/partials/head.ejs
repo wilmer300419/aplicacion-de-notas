@@ -1,0 +1,31 @@
+<% const u = locals.user, f = locals.flash, token = locals.csrfToken || ''; %>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title><%= title %> · NotaClara</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/">NotaClara</a>
+    <% if (u) { %>
+      <div class="header-user">
+        <span class="user-name"><%= u.name %><span class="role"><%= u.role === 'teacher' ? 'Profesor' : 'Estudiante' %></span></span>
+        <form method="post" action="/logout">
+          <input type="hidden" name="_csrf" value="<%= token %>">
+          <button class="btn btn-ghost" type="submit">Cerrar sesión</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</header>
+<main id="contenido" class="container" tabindex="-1">
+<% if (f) { %>
+  <div class="alert alert-<%= f.type %>" role="<%= f.type === 'error' ? 'alert' : 'status' %>"><%= f.message %></div>
+<% } %>
